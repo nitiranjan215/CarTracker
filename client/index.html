@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js"></script>
+  <script src='https://maps.googleapis.com/maps/api/js?key=AIzaSyADzNjC0LPHOABnlrtopqehoDnx5Orr1NM'></script>
+  <script src="https://cdn.jsdelivr.net/lodash/4.17.4/lodash.min.js"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script src="js/angular-loader.js"></script>
+  <script src="js/index1.js"></script>
+  <script src="js/angular-chart.js"></script>
+  <!--script src="js/myMap.js"></script>
+  <script src="js/angular-map-min.js"></script-->
+  <style>
+    .angular-google-map-container { height: 400px; }
+  </style>
+</head>
+<body data-ng-app="carTracker" data-ng-controller="carController">
+  <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Car Tracker</a>
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#" data-ng-click="menuNum=1">vehicle Details</a></li>
+        <li><a href="#" data-ng-click="menuNum=2">Car Readings</a></li>
+        <li><a href="#" data-ng-click="menuNum=3">Alerts</a></li>
+        <li><a href="#" data-ng-click="loadMap()">Loacation Tracker</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!--div class="jumbotron text-center">
+  <h1>Car Tracker</h1>
+  <p>Application for eGen</p>
+</div-->
+<div class="container">
+<div class="container">
+  <div class="row" data-ng-show="menuNum==1">
+    <div class="col-sm-12 table-responsive">
+      <h3>Vehicle Details</h3>
+      <table class="table table-responsive">
+        <thead>
+          <th>Vin</th>
+          <th>Fuel Capacity</th>
+          <th>Make</th>
+          <th>Model</th>
+          <th>Last Service Date</th>
+          <th>RedLine RPM</th>
+          <th>Year</th>
+          </thead>
+        <tr ng-repeat="car in carList | orderBy : 'vin'">
+          <td>{{ car.vin }}</td>
+          <td>{{car.maxFuelVolume}}</td>
+          <td>{{ car.make }}</td>
+          <td>{{car.model}}</td>
+          <td>{{car.lastServiceDate | date:'medium'}}</td>
+          <td>{{car.redlineRpm}}</td>
+          <td>{{car.year}}</td>
+                  </tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Div for charts -->
+  <div class="container">
+    <div class="form-inline" data-ng-show="menuNum==2">
+      <select ng-model="selectedCarForReadings" class="form-control col-sm-3 col-sm-offset-1">
+        <option ng-repeat="x in carList" value="{{x.vin}}">{{x.vin}}</option>
+      </select>
+      <select  class="form-control col-sm-3 col-sm-offset-1" data-ng-model="timeIntervalReadings">
+        <option value="30">30 Mins</option>
+        <option value="60">1 Hr</option>
+        <option value="120">2 Hr</option>
+      </select>
+      <div class="form-group">
+      <label class="radio-inline">
+      <input type="radio" name="optradio" data-ng-model="graphFor" value="1">Engine RPM
+    </label>
+    <label class="radio-inline">
+      <input type="radio" name="optradio" data-ng-model="graphFor" value="2">Fuel Volume
+    </label>
+    <label class="radio-inline">
+      <input type="radio" name="optradio" data-ng-model="graphFor" value="3">Speed
+    </label>
+    <label class="radio-inline">
+      <input type="radio" name="optradio" data-ng-model="graphFor" value="4">Engine HP
+    </label>
+  </div>
+  <button class="btn btn-primary" data-ng-click="getReadings()">Get Readings</button>
+
+  </div>
+    <div class="row" data-ng-if="menuNum==2">
+      <canvas id="tables" class="chart chart-line ng-isolate-scope" chart-data="data" chart-options="options" chart-labels="labels" chart-colors="colors" height="391" width="784" style="display: block; width: 523px; height: 261px;"></canvas>
+    </div>
+  </div>
+
+  <!-- Row for Alerts -->
+  <div class="row" data-ng-show="menuNum==3">
+    <div class="form-inline">
+      <select ng-model="selectedCar" class="form-control col-sm-6">
+        <option ng-repeat="x in carList" value="{{x.vin}}">{{x.vin}}</option>
+      </select>
+
+      <select  class="form-control col-sm-3" data-ng-model="timeInterval">
+        <option value="30">30 Mins</option>
+        <option value="60">1 Hr</option>
+        <option value="120">2 Hr</option>
+      </select>
+      <button class="btn btn-primary col-sm-3" data-ng-click="loadCarAlerts()">Load Alerts</button>
+    </div>
+    <div class="col-sm-12 table-responsive">
+      <h3>Column 1</h3>
+      <table class="table table-responsive">
+        <thead>
+          <th>Vin</th>
+          <th>Message</th>
+          <th>Priority</th>
+          <th>Time</th>
+        </thead>
+        <tr data-ng-repeat="carAlert in carAlerts | orderBy : 'priority'">
+          <td>{{ carAlert.vin }}</td>
+          <td>{{carAlert.message}}</td>
+          <td>{{ carAlert.priority }}</td>
+          <td>{{carAlert.timestamp | date : 'medium'}}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <div class="row" data-ng-show="menuNum==4">
+    <!--ui-gmap-google-map center='map.center' zoom='map.zoom'>
+      <ui-gmap-marker ng-repeat="m in map.markers" coords="m.coords" icon="m.icon" idkey="m.id"></ui-gmap-marker>
+    </ui-gmap-google-map-->
+    <!--ng-map center="[40.74, -74.18]"></ng-map-->
+
+     <div id="map_div" class="container-fluid"></div>
+  </div>
+</div>
+</div>
+</body>
+</html>
