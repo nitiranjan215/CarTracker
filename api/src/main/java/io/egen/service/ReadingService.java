@@ -1,0 +1,17 @@
+package io.egen.service;
+
+import io.egen.entity.Reading;
+
+
+import java.util.List;
+
+/**
+ * Created by nitir on 6/29/2017.
+ */
+public interface ReadingService {
+    List<Reading> findAll();
+
+    List<Reading> findAllByVin(String vin, String time);
+
+    List<Reading> create(Reading veh);
+}
