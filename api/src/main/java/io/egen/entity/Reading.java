@@ -12,7 +12,7 @@ import java.util.UUID;
         @NamedQuery(name = "Reading.findAll",
                 query = "SELECT read FROM Reading read ORDER BY read.vin DESC"),
         @NamedQuery(name = "Reading.findByVin",
-                query = "SELECT read FROM Reading read WHERE read.vin=:paramVin")
+                query = "SELECT read FROM Reading read WHERE read.vin=:paramVin and read.timestamp>:time")
 })
 public class Reading {
     @Id

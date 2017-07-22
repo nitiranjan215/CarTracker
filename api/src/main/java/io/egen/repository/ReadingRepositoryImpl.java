@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -22,8 +23,12 @@ public class ReadingRepositoryImpl implements ReadingRepository{
         return query.getResultList();
     }
 
-    public Reading findOne(String vin) {
-        return entityManager.find(Reading.class, vin);
+    public List<Reading> findAllByVin(String vin, Timestamp timeInterval) {
+        TypedQuery<Reading> query = entityManager.createNamedQuery("Reading.findByVin",Reading.class);
+        query.setParameter("paramVin", vin);
+        query.setParameter("time",timeInterval);
+        List<Reading> resultList = query.getResultList();
+        return query.getResultList();
     }
 
     public Reading create(Reading reading) {

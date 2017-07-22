@@ -1,6 +1,7 @@
 package io.egen.entity;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.UUID;
 
 /**
@@ -8,10 +9,12 @@ import java.util.UUID;
  */
 @Entity
 @NamedQueries({
-        @NamedQuery(name = "Alert.findAll",
-                query = "SELECT alert FROM Alert alert ORDER BY alert.vin DESC"),
+        @NamedQuery(name = "Alert.findAllByTime",
+                query = "SELECT alert FROM Alert alert WHERE alert.timestamp>:paramInterval order by alert.vin"),
+        @NamedQuery(name = "Alert.findCount",
+                query = "SELECT alert.vin, count(alert.vin) FROM Alert alert WHERE alert.timestamp>:paramInterval group by alert.vin"),
         @NamedQuery(name = "Alert.findByVin",
-                query = "SELECT alert FROM Alert alert WHERE alert.vin=:paramVin")
+                query = "SELECT alert FROM Alert alert WHERE alert.vin=:paramVin and alert.timestamp>:paramInterval")
 })
 public class Alert {
     @Id
@@ -20,6 +23,7 @@ public class Alert {
     private String priority;
     private String Message;
     private String vin;
+    private Timestamp timestamp;
     public Alert(){
         this.id= UUID.randomUUID().toString();
     }
@@ -54,5 +58,13 @@ public class Alert {
 
     public void setVin(String vin) {
         this.vin = vin;
+    }
+
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
     }
 }

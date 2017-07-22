@@ -1,5 +1,6 @@
 package io.egen.controller;
 
+import io.egen.entity.Alert;
 import io.egen.entity.Reading;
 import io.egen.service.ReadingService;
 import io.egen.service.VehicleService;
@@ -14,7 +15,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping(value = "/readings")
-@CrossOrigin(origins = "http://mocker.egen.io", maxAge = 3600)
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class ReadingController {
     @Autowired
     ReadingService readingService;
@@ -26,8 +27,9 @@ public class ReadingController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/{vin}",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public Reading findOne(@PathVariable("vin") String vin) {
-        return readingService.findOne(vin);
+    public List<Reading> findAllByVin(@PathVariable("vin") String vin,@RequestParam("time") String time) {
+
+        return readingService.findAllByVin(vin,time);
     }
 
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
@@ -35,5 +37,6 @@ public class ReadingController {
     public List<Reading> create(@RequestBody Reading reading) {
         return readingService.create(reading);
     }
+
 
 }

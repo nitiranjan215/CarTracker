@@ -1,17 +1,17 @@
 package io.egen.repository;
 
 import io.egen.entity.Alert;
-import io.egen.entity.Reading;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
  * Created by nitir on 6/29/2017.
  */
 public interface AlertRepository {
-    List<Alert> findAll();
+    List<Alert> findAll(Timestamp interval);
 
-    Alert findOne(String id);
+    List<Alert> findAllByVin(String vin, Timestamp time);
 
     Alert create(Alert alert);
 }

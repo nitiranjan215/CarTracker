@@ -3,6 +3,7 @@ package io.egen.repository;
 import io.egen.entity.Reading;
 import io.egen.entity.Tire;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -11,7 +12,7 @@ import java.util.List;
 public interface ReadingRepository {
     List<Reading> findAll();
 
-    Reading findOne(String vin);
+    List<Reading> findAllByVin(String vin, Timestamp timeInterval);
 
     Reading create(Reading reading);
     Tire create(Tire tire);
